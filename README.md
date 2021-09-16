@@ -1,11 +1,5 @@
 # Generic JSON
 
-<table><tr>
-	<td><a href="https://docs.rs/generic-json">Documentation</a></td>
-	<td><a href="https://crates.io/crates/generic-json">Crate informations</a></td>
-	<td><a href="https://github.com/timothee-haudebourg/generic-json">Repository</a></td>
-</tr></table>
-
 This crate abstracts the JSON data structures defined in different library dealing with JSON such as `json`, `serde_json`, etc. The goal is to remove hard dependencies to these libraries when possible, and allow downstream users to choose its preferred library.
 It basically defines a trait `Json` and a type `Value` abstracting always the implementation details.
 
@@ -13,7 +7,7 @@ The `Json` trait defines what opaque types are used to represent each component 
 It simplified definition is as follows:
 ```rust
 /// JSON document with metadata.
-pub trait Json: From<Value<Self>> + Into<Value<Self>> {
+pub trait Json {
 	/// Metadata associated to each JSON value.
 	type MetaData;
 	
