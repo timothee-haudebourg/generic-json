@@ -1,15 +1,10 @@
-#![feature(trait_alias)]
-#![feature(generic_associated_types)]
-
-use std::{
-	hash::Hash,
-	convert::TryInto
-};
 use cc_traits::{
+	CollectionRef,
 	Len,
 	MapMut,
 	Get,
 	GetMut,
+	VecMut,
 	WithCapacity,
 	Remove,
 	Iter,
@@ -18,26 +13,27 @@ use cc_traits::{
 
 mod value;
 mod reference;
+mod impls;
 
 pub use value::*;
 pub use reference::*;
 
-/// Abstract JSON document/value interface.
-pub trait Json: Clone + From<Value<Self>> + Into<Value<Self>> {
+/// Abstract JSON document with metadata.
+pub trait Json: From<Value<Self>> + Into<Value<Self>> {
 	/// Metadata associated to each JSON value.
-	type MetaData: Clone;
+	type MetaData;
 	
 	/// Number constant value.
-	type Number: Clone + PartialEq + Eq + Hash;
+	type Number: PartialEq;
 
 	/// JSON array.
-	type Array: Clone + Default + cc_traits::VecMut<Self> + WithCapacity + Iter + IntoIterator<Item=Self>;
+	type Array: Default + VecMut<Self> + WithCapacity + Iter + IntoIterator<Item=Self>;
 
 	/// Object key.
-	type Key: Clone + Ord + Hash + AsRef<str> + for<'a> From<&'a str>;
+	type Key: AsRef<str> + for<'a> From<&'a str>;
 
 	/// JSON object.
-	type Object: Clone + Len + Default + WithCapacity + MapMut<Self::Key, Self> + for<'a> Get<&'a str> + for<'a> GetMut<&'a str> + for<'a> Remove<&'a str> + MapIter + IntoIterator<Item=(Self::Key, Self)>;
+	type Object: Len + Default + WithCapacity + MapMut<Self::Key, Self> + for<'a> Get<&'a str> + for<'a> GetMut<&'a str> + for<'a> Remove<&'a str> + MapIter + IntoIterator<Item=(Self::Key, Self)>;
 
 	/// Get the metadata associated to the document.
 	fn metadata(&self) -> &Self::MetaData;
@@ -99,13 +95,10 @@ pub trait Json: Clone + From<Value<Self>> + Into<Value<Self>> {
 
 	/// If this is an object,
 	/// returns the value associated to the given key, if any.
-	fn get(&self, key: &str) -> Option<<Self::Object as cc_traits::CollectionRef>::ItemRef<'_>> {
+	fn get(&self, key: &str) -> Option<<Self::Object as CollectionRef>::ItemRef<'_>> {
 		match self.as_ref() {
 			ValueRef::Object(obj) => obj.get(key),
 			_ => None
 		}
 	}
 }
-
-pub trait ClonableJson =
-	Json + Clone + for<'a> From<ValueRef<'a, Self>>;
