@@ -1,9 +1,9 @@
 # Generic JSON
 
 <table><tr>
-  <td><a href="https://docs.rs/generic-json">Documentation</a></td>
-  <td><a href="https://crates.io/crates/generic-json">Crate informations</a></td>
-  <td><a href="https://github.com/timothee-haudebourg/generic-json">Repository</a></td>
+	<td><a href="https://docs.rs/generic-json">Documentation</a></td>
+	<td><a href="https://crates.io/crates/generic-json">Crate informations</a></td>
+	<td><a href="https://github.com/timothee-haudebourg/generic-json">Repository</a></td>
 </tr></table>
 
 This crate abstracts the JSON data structures defined in different library dealing with JSON such as `json`, `serde_json`, etc. The goal is to remove hard dependencies to these libraries when possible, and allow downstream users to choose its preferred library.
@@ -20,8 +20,8 @@ pub trait Json: From<Value<Self>> + Into<Value<Self>> {
 	/// Number type.
 	type Number;
 
-  /// String type.
-  type String;
+	/// String type.
+	type String;
 
 	/// Array type.
 	type Array;
@@ -36,12 +36,12 @@ pub trait Json: From<Value<Self>> + Into<Value<Self>> {
 The `Value` type describes the structure of a JSON value:
 ```rust
 pub enum Value<T: Json> {
-  Null,
-  Bool(bool),
-  Number(T::Number),
-  String(T::String),
-  Array(T::Array),
-  Object(T::Object)
+	Null,
+	Bool(bool),
+	Number(T::Number),
+	String(T::String),
+	Array(T::Array),
+	Object(T::Object)
 }
 ```
 
