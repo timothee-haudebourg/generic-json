@@ -18,13 +18,16 @@ mod impls;
 pub use value::*;
 pub use reference::*;
 
-/// Abstract JSON document with metadata.
+/// JSON document with metadata.
 pub trait Json: From<Value<Self>> + Into<Value<Self>> {
 	/// Metadata associated to each JSON value.
 	type MetaData;
 	
 	/// Number constant value.
 	type Number: PartialEq;
+
+	/// String type.
+	type String: AsRef<str> + for<'a> From<&'a str>;
 
 	/// JSON array.
 	type Array: Default + VecMut<Self> + WithCapacity + Iter + IntoIterator<Item=Self>;

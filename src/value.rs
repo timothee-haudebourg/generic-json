@@ -5,7 +5,7 @@ pub enum Value<T: Json> {
 	Null,
 	Boolean(bool),
 	Number(T::Number),
-	String(String),
+	String(T::String),
 	Array(T::Array),
 	Object(T::Object)
 }

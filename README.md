@@ -6,7 +6,44 @@
   <td><a href="https://github.com/timothee-haudebourg/generic-json">Repository</a></td>
 </tr></table>
 
-This crate defined traits that abstracts the JSON objects data structures defined in different library dealing with JSON such as `json`, `serde_json`, etc. The goal is to remove hard dependencies to these libraries when possible, and allow downstream users to choose its preferred library.
+This crate abstracts the JSON data structures defined in different library dealing with JSON such as `json`, `serde_json`, etc. The goal is to remove hard dependencies to these libraries when possible, and allow downstream users to choose its preferred library.
+It basically defines a trait `Json` and a type `Value` abstracting always the implementation details.
+
+The `Json` trait defines what opaque types are used to represent each component of a JSON value.
+It simplified definition is as follows:
+```rust
+/// JSON document with metadata.
+pub trait Json: From<Value<Self>> + Into<Value<Self>> {
+	/// Metadata associated to each JSON value.
+	type MetaData;
+	
+	/// Number type.
+	type Number;
+
+  /// String type.
+  type String;
+
+	/// Array type.
+	type Array;
+
+	/// Object key type.
+	type Key;
+
+	/// Object type.
+	type Object;
+```
+
+The `Value` type describes the structure of a JSON value:
+```rust
+pub enum Value<T: Json> {
+  Null,
+  Bool(bool),
+  Number(T::Number),
+  String(T::String),
+  Array(T::Array),
+  Object(T::Object)
+}
+```
 
 ## License
 

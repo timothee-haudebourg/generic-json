@@ -10,6 +10,8 @@ impl Json for serde_json::Value {
 	
 	type Number = serde_json::Number;
 
+	type String = String;
+
 	type Array = Vec<serde_json::Value>;
 
 	type Key = String;
