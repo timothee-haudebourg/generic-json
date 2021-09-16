@@ -31,6 +31,7 @@ pub trait Json: From<Value<Self>> + Into<Value<Self>> {
 
 	/// Object type.
 	type Object;
+}
 ```
 
 The `Value` type describes the structure of a JSON value:
