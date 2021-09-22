@@ -1,5 +1,4 @@
 use cc_traits::{
-	CollectionRef,
 	Len,
 	Get,
 	Iter,
@@ -15,90 +14,45 @@ pub use reference::*;
 
 /// JSON model.
 pub trait Json: Sized + 'static {
-	/// Metadata associated to each JSON value.
+	/// Metadata type attached to each value.
 	type MetaData;
+
+	/// Value type associated to some metadata.
+	type Value: MetaValue<Self>;
 	
 	/// Literal number type.
-	type Number: PartialEq;
+	type Number;
 
 	/// String type.
 	type String: AsRef<str>;
 
 	/// Array type.
-	type Array: Get<usize, Item=Value<Self>> + Len + Iter + IntoIterator<Item=Value<Self>>;
+	type Array: Get<usize, Item=Self::Value> + Len + Iter + IntoIterator<Item=Self::Value>;
 
 	/// Object key type.
 	type Key: AsRef<str>;
 
 	/// Object type.
-	type Object: Keyed<Key=Self::Key, Item=Value<Self>> + Len + for<'a> Get<&'a str> + MapIter + IntoIterator<Item=(Self::Key, Value<Self>)>;
+	type Object: Keyed<Key=Self::Key, Item=Self::Value> + Len + for<'a> Get<&'a str> + MapIter + IntoIterator<Item=(Self::Key, Self::Value)>;
 }
 
+/// JSON value attached to some metadata.
 pub trait MetaValue<T: Json> {
+	/// Creates a new "meta value" from a `Value` and its associated metadata.
+	fn new(value: Value<T>, metadata: T::MetaData) -> Self;
+
+	/// Returns a reference to the actual JSON value (without the metadata).
+	fn value(&self) -> ValueRef<'_, T>;
+
+	/// Returns a mutable reference to the actual JSON value (without the metadata).
+	fn value_mut(&mut self) -> ValueMut<'_, T>;
+
 	/// Returns a reference to the metadata associated to the JSON value.
 	fn metadata(&self) -> &T::MetaData;
 
-	/// Returns a reference to the actual JSON value (without the metadata).
-	fn value(&self) -> &Value<T>;
+	/// Returns a pair containing a reference to the JSON value and a reference to its metadata.
+	fn as_pair(&self) -> (ValueRef<'_, T>, &T::MetaData);
 
-	/// Returns a mutable reference to the actual JSON value (without the metadata).
-	fn value_mut(&mut self) -> &mut Value<T>;
-
-	/// Checks if this value is `null`.
-	fn is_null(&self) -> bool {
-		self.value().is_null()
-	}
-
-	/// Checks if this value is empty.
-	/// 
-	/// Returns true iff the value is either `null`,
-	/// the empty string, the empty array or
-	/// the empty object.
-	fn is_empty(&self) -> bool {
-		self.value().is_empty()
-	}
-
-	/// Checks if this value is a string.
-	fn is_string(&self) -> bool {
-		self.value().is_string()
-	}
-
-	/// Checks if this value is an array.
-	fn is_array(&self) -> bool {
-		self.value().is_array()
-	}
-
-	/// Checks if this value is an object.
-	fn is_object(&self) -> bool {
-		self.value().is_object()
-	}
-
-	/// Returns this value as a boolean if possible.
-	fn as_bool(&self) -> Option<bool> {
-		self.value().as_bool()
-	}
-	
-	/// Returns this value as a string if possible.
-	fn as_str(&self) -> Option<&str> {
-		self.value().as_str()
-	}
-
-	/// Returns this value as a number if possible.
-	fn as_number(&self) -> Option<&T::Number> {
-		self.value().as_number()
-	}
-
-	/// Returns this value as an object if possible.
-	fn as_object(&self) -> Option<&T::Object> {
-		self.value().as_object()
-	}
-
-	/// If this is an object,
-	/// returns the value associated to the given key, if any.
-	fn get(&self, key: &str) -> Option<<T::Object as CollectionRef>::ItemRef<'_>> {
-		match self.value() {
-			Value::Object(obj) => obj.get(key),
-			_ => None
-		}
-	}
+	/// Returns a pair containing a mutable reference to the JSON value and a reference to its metadata.
+	fn as_pair_mut(&mut self) -> (ValueMut<'_, T>, &T::MetaData);
 }

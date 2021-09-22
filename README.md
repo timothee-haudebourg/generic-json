@@ -1,17 +1,22 @@
 # Generic JSON
 
+JSON is an ubiquitous format used in many applications. There is no single way of storing JSON values depending on the context, sometimes leading some applications to use multiples representations of JSON values in the same place. This can cause a problem for JSON processing libraries that should not care about the actual internal representation of JSON values, but are forced to stick to a particular format, leading to unwanted and costly conversions between the different formats.
+
 This crate abstracts the JSON data structures defined in different library dealing with JSON such as `json`, `serde_json`, etc. The goal is to remove hard dependencies to these libraries when possible, and allow downstream users to choose its preferred library.
-It basically defines a trait `Json` and a type `Value` abstracting always the implementation details.
+It basically defines a trait `Json` and a `ValueRef` type abstracting away the implementation details.
 
 The `Json` trait defines what opaque types are used to represent each component of a JSON value.
-It simplified definition is as follows:
+Its simplified definition is as follows:
 ```rust
-/// JSON document with metadata.
-pub trait Json {
-	/// Metadata associated to each JSON value.
+/// JSON model.
+pub trait Json: Sized + 'static {
+	/// Metadata type attached to each value.
 	type MetaData;
+
+	/// Value type associated to some metadata.
+	type Value: MetaValue<Self>;
 	
-	/// Number type.
+	/// Literal number type.
 	type Number;
 
 	/// String type.
@@ -28,17 +33,31 @@ pub trait Json {
 }
 ```
 
-The `Value` type describes the structure of a JSON value:
+The `Value` type specified in this trait represents a JSON value associated to some metadata. To access the value and its metadata this typ must implement the `MetaValue` trait:
+
 ```rust
-pub enum Value<T: Json> {
-	Null,
-	Bool(bool),
-	Number(T::Number),
-	String(T::String),
-	Array(T::Array),
-	Object(T::Object)
+pub trait MetaValue<T: Json> {
+	fn value(&self) -> ValueRef<'_, T>;
+
+	fn metadata(&self) -> &T::Metadata;
+
+	// ...
 }
 ```
+
+The `ValueRef` exposes the structure of a reference to a JSON value:
+```rust
+pub enum ValueRef<'v, T: Json> {
+	Null,
+	Bool(bool),
+	Number(&'v T::Number),
+	String(&'v T::String),
+	Array(&'v T::Array),
+	Object(&'v T::Object)
+}
+```
+
+In the same way, this crate also defines a `ValueMut` type for mutable references. This allows each implementor to have their own inner representation of values while allowing interoperability.
 
 ## License
 
