@@ -1,11 +1,12 @@
 use crate::{
 	Json,
 	Value,
-	ValueRef,
-	ValueMut
+	MetaValue
 };
 
-impl Json for serde_json::Value {
+pub struct SerdeJson;
+
+impl Json for SerdeJson {
 	type MetaData = ();
 	
 	type Number = serde_json::Number;
@@ -17,31 +18,15 @@ impl Json for serde_json::Value {
 	type Key = String;
 
 	type Object = serde_json::Map<String, serde_json::Value>;
+}
 
-	fn metadata(&self) -> &Self::MetaData {
+impl MetaValue<SerdeJson> for serde_json::Value {
+	fn metadata(&self) -> &() {
 		&()
 	}
 	
-	fn as_ref(&self) -> ValueRef<Self> {
-		match self {
-			Self::Null => ValueRef::Null,
-			Self::Bool(b) => ValueRef::Boolean(*b),
-			Self::Number(n) => ValueRef::Number(n),
-			Self::String(s) => ValueRef::String(s),
-			Self::Array(a) => ValueRef::Array(a),
-			Self::Object(o) => ValueRef::Object(o)
-		}
-	}
-
-	fn as_mut(&mut self) -> ValueMut<Self> {
-		match self {
-			Self::Null => ValueMut::Null,
-			Self::Bool(b) => ValueMut::Boolean(*b),
-			Self::Number(n) => ValueMut::Number(n),
-			Self::String(s) => ValueMut::String(s),
-			Self::Array(a) => ValueMut::Array(a),
-			Self::Object(o) => ValueMut::Object(o)
-		}
+	fn value(&self) -> Value<SerdeJson> {
+		unsafe { std::mem::transmute(self) }
 	}
 }
 

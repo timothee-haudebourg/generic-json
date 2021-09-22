@@ -1,55 +1,52 @@
 use cc_traits::{
 	CollectionRef,
 	Len,
-	MapMut,
 	Get,
-	GetMut,
-	VecMut,
-	WithCapacity,
-	Remove,
 	Iter,
-	MapIter
+	MapIter,
+	Keyed
 };
 
 mod value;
 mod reference;
-mod impls;
 
 pub use value::*;
 pub use reference::*;
 
-/// JSON document with metadata.
-pub trait Json: From<Value<Self>> + Into<Value<Self>> {
+/// JSON model.
+pub trait Json: Sized + 'static {
 	/// Metadata associated to each JSON value.
 	type MetaData;
 	
-	/// Number constant value.
+	/// Literal number type.
 	type Number: PartialEq;
 
 	/// String type.
-	type String: AsRef<str> + for<'a> From<&'a str>;
+	type String: AsRef<str>;
 
-	/// JSON array.
-	type Array: Default + VecMut<Self> + WithCapacity + Iter + IntoIterator<Item=Self>;
+	/// Array type.
+	type Array: Get<usize, Item=Value<Self>> + Len + Iter + IntoIterator<Item=Value<Self>>;
 
-	/// Object key.
-	type Key: AsRef<str> + for<'a> From<&'a str>;
+	/// Object key type.
+	type Key: AsRef<str>;
 
-	/// JSON object.
-	type Object: Len + Default + WithCapacity + MapMut<Self::Key, Self> + for<'a> Get<&'a str> + for<'a> GetMut<&'a str> + for<'a> Remove<&'a str> + MapIter + IntoIterator<Item=(Self::Key, Self)>;
+	/// Object type.
+	type Object: Keyed<Key=Self::Key, Item=Value<Self>> + Len + for<'a> Get<&'a str> + MapIter + IntoIterator<Item=(Self::Key, Value<Self>)>;
+}
 
-	/// Get the metadata associated to the document.
-	fn metadata(&self) -> &Self::MetaData;
-	
-	/// Returns a generic reference to this value.
-	fn as_ref(&self) -> ValueRef<Self>;
+pub trait MetaValue<T: Json> {
+	/// Returns a reference to the metadata associated to the JSON value.
+	fn metadata(&self) -> &T::MetaData;
 
-	/// Returns a generic mutable reference to this value.
-	fn as_mut(&mut self) -> ValueMut<Self>;
+	/// Returns a reference to the actual JSON value (without the metadata).
+	fn value(&self) -> &Value<T>;
+
+	/// Returns a mutable reference to the actual JSON value (without the metadata).
+	fn value_mut(&mut self) -> &mut Value<T>;
 
 	/// Checks if this value is `null`.
 	fn is_null(&self) -> bool {
-		self.as_ref().is_null()
+		self.value().is_null()
 	}
 
 	/// Checks if this value is empty.
@@ -58,49 +55,49 @@ pub trait Json: From<Value<Self>> + Into<Value<Self>> {
 	/// the empty string, the empty array or
 	/// the empty object.
 	fn is_empty(&self) -> bool {
-		self.as_ref().is_empty()
+		self.value().is_empty()
 	}
 
 	/// Checks if this value is a string.
 	fn is_string(&self) -> bool {
-		self.as_ref().is_string()
+		self.value().is_string()
 	}
 
 	/// Checks if this value is an array.
 	fn is_array(&self) -> bool {
-		self.as_ref().is_array()
+		self.value().is_array()
 	}
 
 	/// Checks if this value is an object.
 	fn is_object(&self) -> bool {
-		self.as_ref().is_object()
+		self.value().is_object()
 	}
 
 	/// Returns this value as a boolean if possible.
 	fn as_bool(&self) -> Option<bool> {
-		self.as_ref().as_bool()
+		self.value().as_bool()
 	}
 	
 	/// Returns this value as a string if possible.
 	fn as_str(&self) -> Option<&str> {
-		self.as_ref().as_str()
+		self.value().as_str()
 	}
 
 	/// Returns this value as a number if possible.
-	fn as_number(&self) -> Option<&Self::Number> {
-		self.as_ref().as_number()
+	fn as_number(&self) -> Option<&T::Number> {
+		self.value().as_number()
 	}
 
 	/// Returns this value as an object if possible.
-	fn as_object(&self) -> Option<&Self::Object> {
-		self.as_ref().as_object()
+	fn as_object(&self) -> Option<&T::Object> {
+		self.value().as_object()
 	}
 
 	/// If this is an object,
 	/// returns the value associated to the given key, if any.
-	fn get(&self, key: &str) -> Option<<Self::Object as CollectionRef>::ItemRef<'_>> {
-		match self.as_ref() {
-			ValueRef::Object(obj) => obj.get(key),
+	fn get(&self, key: &str) -> Option<<T::Object as CollectionRef>::ItemRef<'_>> {
+		match self.value() {
+			Value::Object(obj) => obj.get(key),
 			_ => None
 		}
 	}

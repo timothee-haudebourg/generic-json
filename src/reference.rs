@@ -5,7 +5,7 @@ use crate::Json;
 /// Generic JSON value reference.
 pub enum ValueRef<'a, T: Json> {
 	Null,
-	Boolean(bool),
+	Bool(bool),
 	Number(&'a T::Number),
 	String(&'a str),
 	Array(&'a T::Array),
@@ -15,9 +15,9 @@ pub enum ValueRef<'a, T: Json> {
 /// Generic JSON value mutable reference.
 pub enum ValueMut<'a, T: Json> {
 	Null,
-	Boolean(bool),
+	Bool(&'a mut bool),
 	Number(&'a mut T::Number),
-	String(&'a mut str),
+	String(&'a mut T::String),
 	Array(&'a mut T::Array),
 	Object(&'a mut T::Object)
 }
@@ -70,7 +70,7 @@ impl<'a, T: 'a + Json> ValueRef<'a, T> {
 
 	pub fn as_bool(&self) -> Option<bool> {
 		match self {
-			ValueRef::Boolean(b) => Some(*b),
+			ValueRef::Bool(b) => Some(*b),
 			_ => None
 		}
 	}
