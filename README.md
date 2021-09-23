@@ -1,4 +1,10 @@
-# Generic JSON
+# Generic JSON traits
+
+<table><tr>
+	<td><a href="https://docs.rs/generic-json">Documentation</a></td>
+	<td><a href="https://crates.io/crates/generic-json">Crate informations</a></td>
+	<td><a href="https://github.com/timothee-haudebourg/generic-json">Repository</a></td>
+</tr></table>
 
 JSON is an ubiquitous format used in many applications. There is no single way of storing JSON values depending on the context, sometimes leading some applications to use multiples representations of JSON values in the same place. This can cause a problem for JSON processing libraries that should not care about the actual internal representation of JSON values, but are forced to stick to a particular format, leading to unwanted and costly conversions between the different formats.
 
@@ -10,26 +16,26 @@ Its simplified definition is as follows:
 ```rust
 /// JSON model.
 pub trait Json: Sized + 'static {
-	/// Metadata type attached to each value.
-	type MetaData;
+    /// Metadata type attached to each value.
+    type MetaData;
 
-	/// Value type associated to some metadata.
-	type Value: MetaValue<Self>;
-	
-	/// Literal number type.
-	type Number;
+    /// Value type associated to some metadata.
+    type Value: MetaValue<Self>;
 
-	/// String type.
-	type String;
+    /// Literal number type.
+    type Number;
 
-	/// Array type.
-	type Array;
+    /// String type.
+    type String;
 
-	/// Object key type.
-	type Key;
+    /// Array type.
+    type Array;
 
-	/// Object type.
-	type Object;
+    /// Object key type.
+    type Key;
+
+    /// Object type.
+    type Object;
 }
 ```
 
@@ -37,23 +43,23 @@ The `Value` type specified in this trait represents a JSON value associated to s
 
 ```rust
 pub trait MetaValue<T: Json> {
-	fn value(&self) -> ValueRef<'_, T>;
+    fn value(&self) -> ValueRef<'_, T>;
 
-	fn metadata(&self) -> &T::Metadata;
+    fn metadata(&self) -> &T::Metadata;
 
-	// ...
+    // ...
 }
 ```
 
 The `ValueRef` exposes the structure of a reference to a JSON value:
 ```rust
 pub enum ValueRef<'v, T: Json> {
-	Null,
-	Bool(bool),
-	Number(&'v T::Number),
-	String(&'v T::String),
-	Array(&'v T::Array),
-	Object(&'v T::Object)
+    Null,
+    Bool(bool),
+    Number(&'v T::Number),
+    String(&'v T::String),
+    Array(&'v T::Array),
+    Object(&'v T::Object)
 }
 ```
 
@@ -68,7 +74,7 @@ Licensed under either of
 
 at your option.
 
-### Contribution
+## Contribution
 
 Unless you explicitly state otherwise, any contribution intentionally submitted
 for inclusion in the work by you, as defined in the Apache-2.0 license, shall be dual licensed as above, without any

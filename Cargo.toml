@@ -1,9 +1,15 @@
 [package]
 name = "generic-json"
 version = "0.1.0"
+authors = ["Timothée Haudebourg <author@haudebourg.net>"]
 edition = "2018"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+categories = ["data-structures"]
+keywords = ["json", "trait"]
+description = "Generic JSON traits"
+repository = "https://github.com/timothee-haudebourg/generic-json"
+documentation = "https://docs.rs/generic-json"
+license = "MIT/Apache-2.0"
+readme = "README.md"
 
 [dependencies]
 cc-traits = "0.5"
