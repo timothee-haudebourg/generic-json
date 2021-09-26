@@ -13,3 +13,5 @@ readme = "README.md"
 
 [dependencies]
 cc-traits = "0.5"
+json-number = { path = "../../json/json-number" }
+smallstr = "0.2"

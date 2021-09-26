@@ -34,7 +34,7 @@ macro_rules! common_impls {
 				/// For any value on which `is_boolean` returns `true`,
 				/// [`as_bool`](Self::as_bool()) is guaranteed to return the boolean value.
 				pub fn is_bool(&self) -> bool {
-					matches!(self, Self::Number(_))
+					matches!(self, Self::Boolean(_))
 				}
 
 				/// Returns `true` if the value is a number. Returns `false` otherwise.
@@ -162,6 +162,15 @@ impl<'a, T: Json> ValueMut<'a, T> {
         }
     }
 
+    /// If the value is a number, returns a reference to it.
+    /// Returns `None` otherwise.
+    pub fn into_number(self) -> Option<&'a T::Number> {
+        match self {
+            Self::Number(n) => Some(n),
+            _ => None,
+        }
+    }
+
     /// If the value is a string, returns its associated [`str`].
     /// Returns `None` otherwise.
     pub fn as_str(&self) -> Option<&str> {
@@ -180,9 +189,27 @@ impl<'a, T: Json> ValueMut<'a, T> {
         }
     }
 
+    /// If the value is an array, returns a reference to it.
+    /// Returns `None` otherwise.
+    pub fn into_array(self) -> Option<&'a T::Array> {
+        match self {
+            Self::Array(a) => Some(a),
+            _ => None,
+        }
+    }
+
     /// If the value is an object, returns a reference to it.
     /// Returns `None` otherwise.
     pub fn as_object(&self) -> Option<&T::Object> {
+        match self {
+            Self::Object(o) => Some(o),
+            _ => None,
+        }
+    }
+
+    /// If the value is an object, returns a reference to it.
+    /// Returns `None` otherwise.
+    pub fn into_object(self) -> Option<&'a T::Object> {
         match self {
             Self::Object(o) => Some(o),
             _ => None,
@@ -198,9 +225,27 @@ impl<'a, T: Json> ValueMut<'a, T> {
         }
     }
 
+    /// If the value is an array, returns a mutable reference to it.
+    /// Returns `None` otherwise.
+    pub fn into_array_mut(self) -> Option<&'a mut T::Array> {
+        match self {
+            Self::Array(a) => Some(a),
+            _ => None,
+        }
+    }
+
     /// If the value is an object, returns a mutable reference to it.
     /// Returns `None` otherwise.
     pub fn as_object_mut(&mut self) -> Option<&mut T::Object> {
+        match self {
+            Self::Object(o) => Some(o),
+            _ => None,
+        }
+    }
+
+    /// If the value is an object, returns a mutable reference to it.
+    /// Returns `None` otherwise.
+    pub fn into_object_mut(self) -> Option<&'a mut T::Object> {
         match self {
             Self::Object(o) => Some(o),
             _ => None,

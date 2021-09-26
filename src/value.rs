@@ -39,7 +39,7 @@ impl<T: Json> Value<T> {
     /// For any value on which `is_bool` returns `true`,
     /// [`as_bool`](Self::as_bool()) is guaranteed to return the boolean value.
     pub fn is_bool(&self) -> bool {
-        matches!(self, Self::Number(_))
+        matches!(self, Self::Boolean(_))
     }
 
     /// Returns `true` if the value is a number. Returns `false` otherwise.
@@ -167,6 +167,14 @@ impl<T: Json> Value<T> {
         let mut value = Self::Null;
         std::mem::swap(&mut value, self);
         value
+    }
+
+    pub fn with(self, meta: T::MetaData) -> T {
+        T::new(self, meta)
+    }
+
+    pub fn with_default(self) -> T where T::MetaData: Default {
+        T::new(self, T::MetaData::default())
     }
 }
 
