@@ -60,11 +60,9 @@ use cc_traits::{Get, Iter, Keyed, Len, MapIter};
 
 mod reference;
 mod value;
-mod metavalue;
 
 pub use reference::*;
 pub use value::*;
-pub use metavalue::*;
 
 /// JSON value attached to some metadata.
 pub trait Json: Sized {
