@@ -1,4 +1,4 @@
-use crate::{Json, ValueMut, ValueRef};
+use crate::{Json, JsonNew, ValueMut, ValueRef};
 use std::{
     borrow::Cow,
     cmp::Ordering,
@@ -145,7 +145,7 @@ impl<T: Json> Value<T> {
             Self::Null => ValueRef::Null,
             Self::Boolean(b) => ValueRef::Boolean(*b),
             Self::Number(n) => ValueRef::Number(n),
-            Self::String(s) => ValueRef::String(s.as_ref()),
+            Self::String(s) => ValueRef::String(s),
             Self::Array(a) => ValueRef::Array(a),
             Self::Object(o) => ValueRef::Object(o),
         }
@@ -154,7 +154,7 @@ impl<T: Json> Value<T> {
     pub fn as_value_mut(&mut self) -> ValueMut<T> {
         match self {
             Self::Null => ValueMut::Null,
-            Self::Boolean(b) => ValueMut::Boolean(b),
+            Self::Boolean(b) => ValueMut::Boolean(*b),
             Self::Number(n) => ValueMut::Number(n),
             Self::String(s) => ValueMut::String(s),
             Self::Array(a) => ValueMut::Array(a),
@@ -168,7 +168,12 @@ impl<T: Json> Value<T> {
         std::mem::swap(&mut value, self);
         value
     }
+}
 
+impl<T: JsonNew> Value<T>
+where // the where bound is necessary until https://github.com/rust-lang/rust/issues/20671 is fixed.
+    T::String: for<'a> From<&'a str>
+{
     pub fn with(self, meta: T::MetaData) -> T {
         T::new(self, meta)
     }
@@ -263,7 +268,7 @@ where
 impl<'a, T: Json> PartialEq<&'a str> for Value<T> {
     fn eq(&self, other: &&'a str) -> bool {
         match self {
-            Self::String(s) => s.as_ref() == *other,
+            Self::String(s) => &**s == *other,
             _ => false,
         }
     }

@@ -11,5 +11,16 @@ documentation = "https://docs.rs/generic-json"
 license = "MIT/Apache-2.0"
 readme = "README.md"
 
+[features]
+nightly = []
+smallkey = [ "smallvec", "smallstr" ]
+ijson-impl = ["ijson", "cc-traits/ijson"]
+
 [dependencies]
-cc-traits = "0.5.2"
+# cc-traits = "0.6"
+cc-traits = { path = "../../traits/cc-traits" }
+smallstr = { version = "*", optional = true }
+smallvec = { version = "*", optional = true }
+
+# serde_json = { git = "https://github.com/timothee-haudebourg/json", branch = "hash-numbers-only", optional = true }
+ijson = { version = "0.1", optional = true }

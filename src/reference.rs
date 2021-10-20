@@ -5,7 +5,7 @@ pub enum ValueRef<'a, T: Json> {
     Null,
     Boolean(bool),
     Number(&'a T::Number),
-    String(&'a str),
+    String(&'a T::String),
     Array(&'a T::Array),
     Object(&'a T::Object),
 }
@@ -13,7 +13,7 @@ pub enum ValueRef<'a, T: Json> {
 /// Mutable JSON value reference.
 pub enum ValueMut<'a, T: Json> {
     Null,
-    Boolean(&'a mut bool),
+    Boolean(bool),
     Number(&'a mut T::Number),
     String(&'a mut T::String),
     Array(&'a mut T::Array),
@@ -97,11 +97,29 @@ impl<'a, T: Json> ValueRef<'a, T> {
         }
     }
 
+    /// If the value is a string, returns a reference to it.
+    /// Returns `None` otherwise.
+    pub fn as_string(&self) -> Option<&'a T::String> {
+        match self {
+            Self::String(s) => Some(s),
+            _ => None,
+        }
+    }
+
     /// If the value is a string, returns its associated [`str`].
     /// Returns `None` otherwise.
-    pub fn as_str(&self) -> Option<&'a str> {
+    pub fn as_str(&self) -> Option<&str> {
         match self {
-            Self::String(s) => Some(*s),
+            Self::String(s) => Some(s.as_ref()),
+            _ => None,
+        }
+    }
+
+    /// If the value is a string, returns its associated [`str`].
+    /// Returns `None` otherwise.
+    pub fn into_str(self) -> Option<&'a str> {
+        match self {
+            Self::String(s) => Some(s.as_ref()),
             _ => None,
         }
     }
@@ -128,7 +146,7 @@ impl<'a, T: Json> ValueRef<'a, T> {
     pub fn cloned(&self) -> Value<T>
     where
         T::Number: Clone,
-        T::String: From<&'a str>,
+        T::String: Clone,
         T::Array: Clone,
         T::Object: Clone,
     {
@@ -136,7 +154,7 @@ impl<'a, T: Json> ValueRef<'a, T> {
             Self::Null => Value::Null,
             Self::Boolean(b) => Value::Boolean(*b),
             Self::Number(n) => Value::Number((*n).clone()),
-            Self::String(s) => Value::String((*s).into()),
+            Self::String(s) => Value::String((*s).clone()),
             Self::Array(a) => Value::Array((*a).clone()),
             Self::Object(o) => Value::Object((*o).clone()),
         }
@@ -148,7 +166,7 @@ impl<'a, T: Json> ValueMut<'a, T> {
     /// Returns `None` otherwise.
     pub fn as_bool(&self) -> Option<bool> {
         match self {
-            Self::Boolean(b) => Some(**b),
+            Self::Boolean(b) => Some(*b),
             _ => None,
         }
     }
@@ -262,7 +280,7 @@ impl<'a, T: Json> ValueMut<'a, T> {
     {
         match self {
             Self::Null => Value::Null,
-            Self::Boolean(b) => Value::Boolean(**b),
+            Self::Boolean(b) => Value::Boolean(*b),
             Self::Number(n) => Value::Number((*n).clone()),
             Self::String(s) => Value::String((*s).clone()),
             Self::Array(a) => Value::Array((*a).clone()),
