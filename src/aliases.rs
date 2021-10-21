@@ -15,12 +15,22 @@ where
 	<Self as Json>::Object: Clone;
 
 /// Hashable JSON type.
+///
+/// Only the `Number` and `String` types
+/// are quired to implement `Hash` for now
+/// util `Hash` implementations on JSON values
+/// (and in particular JSON objects) is more widely
+/// provided by JSON implementors.
 pub trait JsonHash = Json + Hash
 where
 	<Self as Json>::Number: Hash,
 	<Self as Json>::String: Hash;
 
 /// Mutable JSON type.
+///
+/// Ensure that common functions
+/// to insert and remove values from arrays
+/// and objects are provided.
 pub trait JsonMut = Json
 where
 	<Self as Json>::Array: CollectionMut + IterMut + PushBack + PopBack,
@@ -47,6 +57,9 @@ where
 	<Self as Json>::Object: Send;
 
 /// Sync JSON type.
+///
+/// This will also ensure that
+/// the associated reference types are `Send + Sync`.
 pub trait JsonSync = Json + Sync
 where
 	<Self as Json>::Number: Sync,
@@ -63,6 +76,7 @@ where
 /// Send + Sync JSON type.
 pub trait JsonSendSync = JsonSync + JsonSend;
 
+/// Send + Sync mutable JSON type.
 pub trait JsonMutSendSync = JsonMut + JsonSendSync
 where
 	for<'a> <<Self as Json>::Array as CollectionMut>::ItemMut<'a>: Send,
@@ -78,6 +92,9 @@ where
 	for<'a> <<Self as Json>::Array as CollectionMut>::ItemMut<'a>: Into<ValueMut<'a, Self>>,
 	for<'a> <<Self as Json>::Object as CollectionMut>::ItemMut<'a>: Into<ValueMut<'a, Self>>;
 
+/// Lifetime bound.
+///
+/// Ensure that every type lives as long as `'a`.
 pub trait JsonLft<'a> = Json + 'a
 where
 	<Self as Json>::MetaData: 'a,

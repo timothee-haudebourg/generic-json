@@ -10,15 +10,14 @@
 //! and allow downstream users to choose its preferred library.
 //! It basically defines a trait `Json` and a `ValueRef` type abstracting away the implementation details.
 //!
-//! The `Json` trait defines what opaque types are used to represent each component of a JSON value,
-//! and provides a function returning the value as a `ValueRef` enum type.
+//! The `Json` trait must be implemented by the JSON value type
+//! and defines what opaque types are used to represent each component of a JSON value.
+//! It also provides a function returning the value as a `ValueRef` enum type.
 //! Its simplified definition is as follows:
 //! ```rust
+//! # pub struct ValueRef<'a, T>(std::marker::PhantomData<&'a T>);
 //! /// JSON model.
 //! pub trait Json: Sized + 'static {
-//!     /// Value type associated to some metadata.
-//!     type Value: MetaValue<Self>;
-//!     
 //!     /// Literal number type.
 //!     type Number;
 //!
@@ -35,17 +34,18 @@
 //!     type Object;
 //!
 //!     /// Returns a reference to this value as a `ValueRef`.
-//!     fn value(&self) -> ValueRef<'_, T>;
+//!     fn value(&self) -> ValueRef<'_, Self>;
 //!
 //!     /// Metadata type attached to each value.
 //!     type MetaData;
 //!
-//!     fn metadata(&self) -> &T::Metadata;
+//!     fn metadata(&self) -> &Self::MetaData;
 //! }
 //! ```
 //!
 //! The `ValueRef` exposes the structure of a reference to a JSON value:
 //! ```rust
+//! # use generic_json::Json;
 //! pub enum ValueRef<'v, T: Json> {
 //!     Null,
 //!     Bool(bool),
@@ -59,18 +59,13 @@
 //! In the same way, this crate also defines a `ValueMut` type for mutable references.
 //! This allows each implementor to have their own inner representation of values while allowing interoperability.
 //!
-//! ## Unnecessary `Hash` and `Clone` traits.
+//! ## Trait aliases
 //!
-//! The current definition of the `Json` trait imposes what may seem like
-//! unnecessary constraints such as `Hash` and `Clone` implementations.
-//! These constraints are often required by JSON processing libraries while
-//! commonly provided by JSON implementations.
-//! Imposing those constraints by default reduces the burden of adding
-//! `where` clauses everywhere in the source code which are not yet conveniently handled by
-//! the Rust compiler.
-//! These constraints will be relaxed once they can be expressed
-//! using [trait aliases](https://github.com/rust-lang/rust/issues/41517) without having to [duplicate `where` clauses
-//! everywhere](https://github.com/rust-lang/rust/issues/44491).
+//! When the `nightly` feature is enabled,
+//! this crate also defines some trait aliases that define common
+//! requirements for JSON data types.
+//! For instance the `JsonClone` trait alias ensures that every component
+//! of the JSON value implements `Clone`.
 #![cfg_attr(feature = "nightly", feature(trait_alias))]
 #![feature(generic_associated_types)]
 use cc_traits::{Get, Iter, Keyed, Len, MapIter};
@@ -103,7 +98,7 @@ impl Key<()> for String {
 }
 
 #[cfg(feature = "smallkey")]
-impl<A: smallvec::Array> Key<()> for smallstr::SmallString<A> {
+impl<A: smallvec::Array<Item = u8>> Key<()> for smallstr::SmallString<A> {
 	fn metadata(&self) -> &() {
 		&()
 	}
