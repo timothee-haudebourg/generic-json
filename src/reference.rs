@@ -1,4 +1,4 @@
-use crate::{Json, Value};
+use crate::{Json, Number, Value};
 
 /// JSON value reference.
 pub enum ValueRef<'a, T: Json> {
@@ -44,6 +44,46 @@ macro_rules! common_impls {
 				pub fn is_number(&self) -> bool {
 					matches!(self, Self::Number(_))
 				}
+
+                /// Returns this number as an `u32` if it can be exactly represented as such.
+                pub fn as_u32(&self) -> Option<u32> {
+                    self.as_number().map(Number::as_u32).flatten()
+                }
+
+                /// Returns this number as an `u64` if it can be exactly represented as such.
+                pub fn as_u64(&self) -> Option<u64> {
+                    self.as_number().map(Number::as_u64).flatten()
+                }
+
+                /// Returns this number as an `i32` if it can be exactly represented as such.
+                pub fn as_i32(&self) -> Option<i32> {
+                    self.as_number().map(Number::as_i32).flatten()
+                }
+
+                /// Returns this number as an `i64` if it can be exactly represented as such.
+                pub fn as_i64(&self) -> Option<i64> {
+                    self.as_number().map(Number::as_i64).flatten()
+                }
+
+                /// Returns this number as an `f32` if it can be exactly represented as such.
+                pub fn as_f32(&self) -> Option<f32> {
+                    self.as_number().map(Number::as_f32).flatten()
+                }
+
+                /// Returns this number as an `f32` if it is a number, potentially losing precision in the process.
+                pub fn as_f32_lossy(&self) -> Option<f32> {
+                    self.as_number().map(Number::as_f32_lossy)
+                }
+
+                /// Returns this number as an `f64` if it can be exactly represented as such.
+                pub fn as_f64(&self) -> Option<f64> {
+                    self.as_number().map(Number::as_f64).flatten()
+                }
+
+                /// Returns this number as an `f64` if it is a number, potentially losing precision in the process.
+                pub fn as_f64_lossy(&self) -> Option<f64> {
+                    self.as_number().map(Number::as_f64_lossy)
+                }
 
 				/// Returns `true` if the value is a string.
 				/// Returns `false` otherwise.

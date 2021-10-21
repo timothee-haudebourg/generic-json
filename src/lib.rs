@@ -248,6 +248,46 @@ pub trait Json: Sized + Eq {
 		self.as_value_ref().as_number()
 	}
 
+	/// Returns this number as an `u32` if it can be exactly represented as such.
+	fn as_u32(&self) -> Option<u32> {
+		self.as_value_ref().as_u32()
+	}
+
+	/// Returns this number as an `u64` if it can be exactly represented as such.
+	fn as_u64(&self) -> Option<u64> {
+		self.as_value_ref().as_u64()
+	}
+
+	/// Returns this number as an `i32` if it can be exactly represented as such.
+	fn as_i32(&self) -> Option<i32> {
+		self.as_value_ref().as_i32()
+	}
+
+	/// Returns this number as an `i64` if it can be exactly represented as such.
+	fn as_i64(&self) -> Option<i64> {
+		self.as_value_ref().as_i64()
+	}
+
+	/// Returns this number as an `f32` if it can be exactly represented as such.
+	fn as_f32(&self) -> Option<f32> {
+		self.as_value_ref().as_f32()
+	}
+
+	/// Returns this number as an `f32` if it is a number, potentially losing precision in the process.
+	fn as_f32_lossy(&self) -> Option<f32> {
+		self.as_value_ref().as_f32_lossy()
+	}
+
+	/// Returns this number as an `f64` if it can be exactly represented as such.
+	fn as_f64(&self) -> Option<f64> {
+		self.as_value_ref().as_f64()
+	}
+
+	/// Returns this number as an `f64` if it is a number, potentially losing precision in the process.
+	fn as_f64_lossy(&self) -> Option<f64> {
+		self.as_value_ref().as_f64_lossy()
+	}
+
 	/// If the value is a string, returns its associated [`str`].
 	/// Returns `None` otherwise.
 	fn as_str(&self) -> Option<&str> {
