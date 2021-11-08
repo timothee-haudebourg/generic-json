@@ -109,7 +109,7 @@ pub trait Json: Sized + Eq {
 	/// Metadata type attached to each value.
 	///
 	/// The metadata should be ignored during comparison/ordering/hashing of JSON values.
-	type MetaData: Clone;
+	type MetaData: Clone + Sync + Send;
 
 	/// Literal number type.
 	type Number: Number;
