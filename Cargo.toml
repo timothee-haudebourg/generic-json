@@ -15,9 +15,11 @@ readme = "README.md"
 nightly = []
 smallkey = [ "smallvec", "smallstr" ]
 ijson-impl = ["ijson", "cc-traits/ijson"]
+serde_json-impl = ["serde_json", "cc-traits/serde_json"]
 
 [dependencies]
 cc-traits = "0.7"
 smallstr = { version = "0.2", optional = true }
 smallvec = { version = "1.7", optional = true }
 ijson = { version = "0.1", optional = true }
+serde_json = { version = "1.0.69", optional = true }

@@ -65,6 +65,16 @@ pub enum ValueRef<'v, T: Json> {
 In the same way, this crate also defines a `ValueMut` type for mutable references.
 This allows each implementor to have their own inner representation of values while allowing interoperability.
 
+### Foreign implementations
+
+This library optionally provides implementations of the `Json` trait for
+the following foreign types, enabled by their associated feature.
+
+| Type                                                                          | Feature gate      |
+|-------------------------------------------------------------------------------|-------------------|
+| [`serde_json::Value`](https://docs.serde.rs/serde_json/value/enum.Value.html) | `serde_json-impl` |
+| [`ijson::IValue`](https://docs.rs/ijson/latest/ijson/struct.IValue.html)      | `ijson-impl`      |
+
 ### Trait aliases
 
 When the `nightly` feature is enabled,
