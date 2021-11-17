@@ -78,7 +78,7 @@
 //! of the JSON value implements `Clone`.
 #![cfg_attr(feature = "nightly", feature(trait_alias))]
 #![feature(generic_associated_types)]
-use cc_traits::{Get, Iter, Keyed, Len, MapIter};
+use cc_traits::{Get, GetKeyValue, Iter, Keyed, Len, MapIter};
 use std::{hash::Hash, ops::Deref};
 
 mod impls;
@@ -137,6 +137,7 @@ pub trait Json: Sized + Eq {
 	type Object: Keyed<Key = Self::Key, Item = Self>
 		+ Len
 		+ for<'a> Get<&'a str>
+		+ for<'a> GetKeyValue<&'a str>
 		+ MapIter
 		+ IntoIterator<Item = (Self::Key, Self)>;
 
