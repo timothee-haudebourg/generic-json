@@ -72,6 +72,7 @@ the following foreign types, enabled by their associated feature.
 
 | Type                                                                          | Feature gate      |
 |-------------------------------------------------------------------------------|-------------------|
+| [`serde_json::Value`](https://docs.serde.rs/serde_json/value/enum.Value.html) | `serde_json-impl` |
 | [`ijson::IValue`](https://docs.rs/ijson/latest/ijson/struct.IValue.html)      | `ijson-impl`      |
 
 ### Trait aliases
