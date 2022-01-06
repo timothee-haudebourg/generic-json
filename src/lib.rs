@@ -82,14 +82,14 @@ use cc_traits::{Get, GetKeyValue, Iter, Keyed, Len, MapIter};
 use std::{hash::Hash, ops::Deref};
 
 mod impls;
-mod number;
+pub mod number;
 mod reference;
 mod value;
 
 #[cfg(feature = "nightly")]
 mod aliases;
 
-pub use number::*;
+pub use number::Number;
 pub use reference::*;
 pub use value::*;
 
@@ -383,5 +383,48 @@ pub trait JsonNew: Json {
 		Self::Object: Default,
 	{
 		Self::object(Self::Object::default(), metadata)
+	}
+}
+
+/// Null JSON type.
+/// 
+/// This is a dummy type that can only represent the `null` JSON value.
+#[derive(PartialEq, Eq, Hash)]
+pub struct Null;
+
+impl Json for Null {
+	type MetaData = ();
+
+	type Number = number::Zero;
+
+	type String = String;
+
+	/// Array type.
+	type Array = Vec<Self>;
+
+	/// Object key type.
+	type Key = String;
+
+	/// Object type.
+	type Object = std::collections::BTreeMap<String, Self>;
+
+	fn as_value_ref(&self) -> ValueRef<'_, Self> {
+		ValueRef::Null
+	}
+
+	fn as_value_mut(&mut self) -> ValueMut<'_, Self> {
+		ValueMut::Null
+	}
+
+	fn into_parts(self) -> (Value<Self>, Self::MetaData) {
+		(Value::Null, ())
+	}
+
+	fn metadata(&self) -> &Self::MetaData {
+		&()
+	}
+
+	fn as_pair_mut(&mut self) -> (ValueMut<'_, Self>, &Self::MetaData) {
+		(ValueMut::Null, &())
 	}
 }
