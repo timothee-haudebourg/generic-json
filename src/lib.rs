@@ -389,7 +389,7 @@ pub trait JsonNew: Json {
 /// Null JSON type.
 /// 
 /// This is a dummy type that can only represent the `null` JSON value.
-#[derive(PartialEq, Eq, Hash)]
+#[derive(PartialEq, Eq, Hash, PartialOrd, Ord, Debug)]
 pub struct Null;
 
 impl Json for Null {
