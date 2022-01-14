@@ -21,7 +21,7 @@ where
 /// util `Hash` implementations on JSON values
 /// (and in particular JSON objects) is more widely
 /// provided by JSON implementors.
-pub trait JsonHash = Json + Hash
+pub trait JsonHash = Json
 where
 	<Self as Json>::Number: Hash,
 	<Self as Json>::String: Hash;
