@@ -26,7 +26,7 @@ pub trait Number: Eq {
 }
 
 /// Zero number.
-/// 
+///
 /// This is a dummy number type that can only represent the value `0.0`.
 #[derive(PartialEq, Eq, Hash, PartialOrd, Ord, Debug)]
 pub struct Zero;
